@@ -1,0 +1,91 @@
+install flask
+install flask-login
+install flask-sqlalchemy
+initialize flask and return app in init.py.
+from website import create_app
+the line if __name__=='__main__' says that the code in the condition below gonna run only if the file is run and not imported
+app.run(debug=True) gonna run a webserver, debug=true means if we change any code this is gonna run the webserver again
+run the main.py using run you'll see that Not found page which means that we currently do not have any index or html page to show
+create our first website root
+the view.py contains the home page, the other html pages
+Blueprint means that this file has bunch of roots unnside it, bunch of urls to find so that we dont have to find all our views to
+find in single file, then define blueprint
+@views.route('/')- name of the blueprint
+inside it we 
+register the blueprinnts in init.py
+create views for login, logout and sign up
+in template folder we are gonna put rendered html
+jinja- a templating engine- it allows us to use python within html as which does the work of javascript
+base html - theme of the website
+write some html
+import bootstrap cdn for bootstrap
+to write python inside html use {% python_code%} the jinja engine will render it
+{% block title %}Home{% endblock %}- defining a block in this base template that can be overwriten in the child template ie. 
+home->login load the javascript for the bootstrap, bootstrap has animatiins that use javascript  
+if you wanna integrate your own javascript put the javascript file put in static , also images, css and others
+now once you put it into static you can load in your html using-
+<script
+      type="text/javascript"
+      src="{{ url_for('static', filename='index.js') }}"
+    ></script>
+when 
+    static is folder name and the filename,  url_for is a python function {{contains python_code}} 
+    navbar== lookup in bootstrap
+    so now we have our base template but its only a template and we need to use it
+    create a home.html
+notice that home,login and signup pages extends the base template
+now render the template
+pass the values inside the templates
+you can write python if-else in the jinja
+write html in signup.html
+write html in login.html
+do not forget to add the container in base.html and then {%block content%}//conntents{%endblock%} to add the html you wrote above
+HTTPS requests
+add methods in the route defined in auth.py as GET and POST
+import requests in auth.py
+now when we hit the submit button on login or signup page or refresh button, we fire to methods ie GET when we hit refresh and POST
+we hit submit, so to actually do something with these buttons we provide an additional args in route of login and signup
+for example in signup when the request method is post we actually want to get the data from the fields and add it the user database
+and we have defined pythonic codes for such
+import flash, flash is used to show user some pop type messaage for success or failure, notice that this flash message should appear
+between the navbar and the container which conatains the fields for data entry hence we define <div> in the base html accordingly
+and then wrap it inside some python so that it get =s fired at appropriate condition 
+setup database.
+from flask_sqlalchemy import SQLAlchemy
+and initialize the database giving in the app as parameter to let the flask knnow that for this app we are gonna use the db
+db=SQLAlchemy() initializes the database
+configure the app to give it a database.db file using app.config['sqlalchemy']
+initialize the database object with this app
+define database models/tables/schema
+one database for user login info and another for storing notes
+in the model.py import db object that was created
+from . means form current dir
+from flask_login import UserMixin is module which helps user login
+id's are automatically set, ther are auto incremented
+we create schema for both the user and notes now, every note belong to a user, its a many(notes) to one(user) relationship
+we need to relate these schemas with the help of a foreign key,
+the many side of the relationship is the one that contain the foreign key, think about it
+ db.foreign_key('user.id') here user is small because sql thinks its sexy this way
+ now for each notes we have a user id associated with it
+ but each user should also know how many notes does it hold
+ notes = db.relationship('Notes')-> every time we create a note add into this User's notes relationship that note id
+ create this database
+ we import .models in init script to run  the model script so that it can start doing what it has to do
+ and do a create_database(app)
+the last lines of init script checks whether a db is already created if not create it
+a db file is created
+now create a new user script in auth.py
+in auth.py import User so that you can use the schema
+import werkzueg.security to hash our password
+we never store password as plain text, we pass it through a hashing function and store its output 
+that hash function has no inverse function so we never can know what is the password
+we can only authnticate the password again by passing it through the same hash function
+import db to auth
+now that we have creeated account, script for logging users in
+firt we check if the srequest method is post, if it is then we get the email and password from the form
+now we check if the user exists in our database or not if it exits then we check the password if its correct we log the user in
+
+from flask_login import login_user, login_required, logout_user, current_user
+the above module is required so that we cant access the home page or logout if we are not logged in by writing a decorator above the home()
+hide the login and signup if the user is currently logged in
+hide the home and logout if the user is not currently logged in
